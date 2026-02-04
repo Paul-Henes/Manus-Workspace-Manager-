@@ -25,11 +25,11 @@ The skill operates on four logical databases. Database ID mapping is handled int
 | **Logs** | Level (Info/Warning/Error), Message, Timestamp | Reference (Relation to Project/Task) |
 | **Error Knowledge** | Error Type (Title), Context, Resolution | Root Cause, Occurrence Count, Last Seen, Reference |
 
-## Workflows### Project and Task Management (STRICT PROTOCOL)
-1. **ID Verification**: Before writing, verify the target Database ID from the environment.
-2. **Atomic Operations**: Every creation (`create_project`, `create_task`) MUST be followed by an immediate `log_event` call. If logging fails, the operation is considered failed.
-3. **Write Confirmation**: After using `append_project_info`, you MUST verify the write by checking the tool's return message.
-4. **Field Mapping**: Ensure property names match exactly (e.g., `Reference (Project)` instead of `Reference`).
+## Workflows### Project and Task Management (VERIFIED WRITE PROTOCOL)
+1. **Direct Page Targeting**: When adding info to a project, always use the specific Page ID.
+2. **Body Content Injection**: Use the `append_project_info` tool to inject content directly into the page body as blocks. This is the only way to ensure visibility in the Notion UI.
+3. **Strict Validation**: Every write operation MUST be verified against the server's response. If no "SUCCESS" message with a Block ID is received, retry with explicit API parameters.
+4. **No Assumptions**: Do not assume a page is updated just because the tool was called. Always confirm the presence of content.
 
 ### Error Handling and Knowledge Retrieval
 When an operation fails or an error is encountered:
