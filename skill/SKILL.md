@@ -25,12 +25,11 @@ The skill operates on four logical databases. Database ID mapping is handled int
 | **Logs** | Level (Info/Warning/Error), Message, Timestamp | Reference (Relation to Project/Task) |
 | **Error Knowledge** | Error Type (Title), Context, Resolution | Root Cause, Occurrence Count, Last Seen, Reference |
 
-## Workflows
-
-### Project and Task Creation
-1. Validate that all required fields are provided by the user.
-2. Call `create_project` or `create_task` with the validated parameters.
-3. Immediately call `log_event` to record the creation.
+## Workflows### Project and Task Management (STRICT PROTOCOL)
+1. **ID Verification**: Before writing, verify the target Database ID from the environment.
+2. **Atomic Operations**: Every creation (`create_project`, `create_task`) MUST be followed by an immediate `log_event` call. If logging fails, the operation is considered failed.
+3. **Write Confirmation**: After using `append_project_info`, you MUST verify the write by checking the tool's return message.
+4. **Field Mapping**: Ensure property names match exactly (e.g., `Reference (Project)` instead of `Reference`).
 
 ### Error Handling and Knowledge Retrieval
 When an operation fails or an error is encountered:

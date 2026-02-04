@@ -252,12 +252,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           divider: {},
         });
 
-        await notion.blocks.children.append({
-          block_id: project_id,
-          children: children,
-        });
-
-        return { content: [{ type: "text", text: `Information successfully appended to project ${project_id}` }] };
+        try {
+          const response = await notion.blocks.children.append({
+            block_id: project_id,
+            children: children,
+          });
+          return { content: [{ type: "text", text: `SUCCESS: Information appended to project ${project_id}. New block ID: ${response.results[0]?.id}` }] };
+        } catch (error: any) {
+          return { content: [{ type: "text", text: `FAILURE: Could not append info to project ${project_id}. Error: ${error.message}` }], isError: true };
+        }
       }
 
       default:
