@@ -165,13 +165,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case "log_event": {
         const { level, message, timestamp, project_id, task_id } = args as any;
+        // Ensure timestamp is valid ISO string
+        const finalTimestamp = timestamp && !isNaN(Date.parse(timestamp)) 
+          ? new Date(timestamp).toISOString() 
+          : new Date().toISOString();
+        
         const response = await notion.pages.create({
           parent: { database_id: DB_IDS.logs },
           properties: {
-            Entry: { title: [{ text: { content: "Log Entry" } }] },
-            Level: { select: { name: level } },
+            Entry: { title: [{ text: { content: `Log: ${message.substring(0, 50)}...` } }] },
+            Level: { select: { name: level || "Info" } },
             Message: { rich_text: [{ text: { content: message } }] },
-            Timestamp: { date: { start: timestamp } },
+            Timestamp: { date: { start: finalTimestamp } },
             ...(project_id ? { "Reference (Projects)": { relation: [{ id: project_id }] } } : {}),
             ...(task_id ? { "Reference (Tasks)": { relation: [{ id: task_id }] } } : {}),
           },
