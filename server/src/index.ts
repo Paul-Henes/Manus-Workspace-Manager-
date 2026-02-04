@@ -168,6 +168,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const response = await notion.pages.create({
           parent: { database_id: DB_IDS.logs },
           properties: {
+            Entry: { title: [{ text: { content: "Log Entry" } }] },
             Level: { select: { name: level } },
             Message: { rich_text: [{ text: { content: message } }] },
             Timestamp: { date: { start: timestamp } },
