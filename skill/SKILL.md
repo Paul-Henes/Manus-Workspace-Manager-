@@ -43,6 +43,12 @@ When an operation fails or an error is encountered:
    - Ask the user for the correct resolution.
    - Store the new knowledge using `store_error_solution` once confirmed.
 
+### Knowledge Management on Project Pages
+When the user provides links, articles, or general information related to a project:
+1. **Analyze and Summarize**: Create a concise summary of the information provided.
+2. **Append to Project**: Use `append_project_info` to store the summary and original source on the project's Notion page.
+3. **Categorize**: Use `Summary` for abstracts, `Source` for links/references, and `Info` for general notes.
+
 ## Resource Navigation
 
 - Detailed tool definitions and parameter requirements: `references/mcp-tools.md`

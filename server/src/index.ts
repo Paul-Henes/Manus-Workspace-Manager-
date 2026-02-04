@@ -106,6 +106,21 @@ const TOOLS: Tool[] = [
       required: ["context"],
     },
   },
+  {
+    name: "append_project_info",
+    description: "Append structured information (summary, sources) to a project page",
+    inputSchema: {
+      type: "object",
+      properties: {
+        project_id: { type: "string" },
+        content_type: { type: "string", enum: ["Summary", "Source", "Info"] },
+        title: { type: "string" },
+        body: { type: "string" },
+        url: { type: "string" },
+      },
+      required: ["project_id", "content_type", "body"],
+    },
+  },
 ];
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -200,6 +215,49 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }));
 
         return { content: [{ type: "text", text: JSON.stringify(results, null, 2) }] };
+      }
+
+      case "append_project_info": {
+        const { project_id, content_type, title, body, url } = args as any;
+        const children: any[] = [
+          {
+            object: "block",
+            type: "heading_3",
+            heading_3: {
+              rich_text: [{ text: { content: `${content_type}: ${title || "New Entry"}` } }],
+            },
+          },
+          {
+            object: "block",
+            type: "paragraph",
+            paragraph: {
+              rich_text: [{ text: { content: body } }],
+            },
+          },
+        ];
+
+        if (url) {
+          children.push({
+            object: "block",
+            type: "bookmark",
+            bookmark: {
+              url: url,
+            },
+          });
+        }
+
+        children.push({
+          object: "block",
+          type: "divider",
+          divider: {},
+        });
+
+        await notion.blocks.children.append({
+          block_id: project_id,
+          children: children,
+        });
+
+        return { content: [{ type: "text", text: `Information successfully appended to project ${project_id}` }] };
       }
 
       default:

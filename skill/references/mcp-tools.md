@@ -16,3 +16,4 @@ The following MCP tools must be available and used for all operations. All tools
 ## Error Knowledge Base
 - `store_error_solution(error_type: string, context: string, resolution: string, root_cause?: string, reference_id?: string)`
 - `retrieve_similar_errors(context: string) -> Array<{error_type: string, resolution: string, occurrence_count: number, last_seen: string}>`
+- `append_project_info(project_id: string, content_type: "Summary" | "Source" | "Info", body: string, title?: string, url?: string)`
